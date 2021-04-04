@@ -3,12 +3,22 @@
  */
 package Cardgame;
 
+import GUI.StartScreen;
+
 public class App {
     public String getGreeting() {
         return "Hello World!";
     }
 
     public static void main(String[] args) {
+
         System.out.println(new App().getGreeting());
+
+        StartScreen startscreen = new StartScreen();
+        startscreen.setTitle("Versuch");
+        startscreen.pack();
+        startscreen.setVisible(true);
+
+
     }
 }
