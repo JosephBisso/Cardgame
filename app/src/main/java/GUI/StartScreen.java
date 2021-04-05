@@ -2,7 +2,7 @@ package GUI;
 
 import javax.swing.*;
 
-public class StartScreen extends JFrame {
+public class StartScreen  {
     private JPanel panel_Content;
     private JButton button_play;
     private JProgressBar progressBar;
@@ -12,11 +12,11 @@ public class StartScreen extends JFrame {
     private JLabel label_selectGame;
     private JLabel label_selectStyle;
 
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
-
-    public StartScreen() {
-        add(panel_Content);
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("StartScreen");
+        frame.setContentPane(new StartScreen().panel_Content);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
     }
 }
