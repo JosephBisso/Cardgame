@@ -14,11 +14,6 @@ public class App {
 
         System.out.println(new App().getGreeting());
 
-        StartScreen startscreen = new StartScreen();
-        startscreen.setTitle("Versuch");
-        startscreen.pack();
-        startscreen.setVisible(true);
-
 
     }
 }
