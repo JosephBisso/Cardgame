@@ -13,6 +13,8 @@ public class Deck {
     private ArrayList<Players> listPlayers;
     private ArrayList<Karte> playableCards;
     private ArrayList<Karte> playedCards;
+    private Karte lasPlayedCard;
+    private int toPick = 0;
     private enum Style {
         one, two, three, four
     }
@@ -59,6 +61,22 @@ public class Deck {
         return deckName_id;
     }
 
+    public Karte getLasPlayedCard() {
+        return lasPlayedCard;
+    }
+
+    private void addToPick(int anzahl) {
+        toPick += anzahl;
+    }
+
+    private void resetToPick() {
+        toPick = 0;
+    }
+
+    public void setLasPlayedCard(Karte lasPlayedCard) {
+        this.lasPlayedCard = lasPlayedCard;
+    }
+
     public Karte getTopCard() {
         if (playableCards.size() < 1) {
             int counter = 0;
@@ -92,5 +110,81 @@ public class Deck {
         for (Players player : listPlayers) {
 
         }
+        setLasPlayedCard(playedCards.get(playedCards.size() - 1));
     }
+
+    private void beTransparent(Karte[] card) {
+        ArrayList<Karte> karten = new ArrayList<>();
+        Collections.addAll(karten, card);
+        playedCards.addAll(0, karten);
+    }
+
+    private void commands(Karte[] card, String motiv) throws SpielException {
+        try {
+            setLasPlayedCard(new Karte("COMMAND", "all2", motiv));
+            ArrayList<Karte> karten = new ArrayList<>();
+            Collections.addAll(karten, card);
+            playedCards.addAll(karten);
+        } catch (SpielException e) {
+            throw e;
+        }
+    }
+
+    private void reverse(Karte[] card) {
+        ArrayList<Karte> karten = new ArrayList<>();
+        Collections.addAll(karten, card);
+        playedCards.addAll(karten);
+        Collections.reverse(listPlayers);
+    }
+
+    private void skip(Karte[] card) {
+        ArrayList<Karte> karten = new ArrayList<>();
+        Collections.addAll(karten, card);
+        playedCards.addAll(karten);
+    }
+
+    private boolean add2 (Karte[] card, Players player, Karte possible_addStopCard) {
+        ArrayList<Karte> karten = new ArrayList<>();
+        Collections.addAll(karten, card);
+        playedCards.addAll(karten);
+        if (possible_addStopCard.getRules().length == 0) {
+            player.pick(2);
+            return true;
+        }
+        ArrayList <String> rules = new ArrayList<>();
+        Collections.addAll(rules, possible_addStopCard.getRules());
+        if (rules.contains(Spiel.Rules.stopAdd.toString()))  {
+            playedCards.add(possible_addStopCard);
+            if (rules.contains(Spiel.Rules.add2.toString())) {
+                addToPick(2);
+            } else if (rules.contains(Spiel.Rules.add4.toString())) {
+                addToPick(4);
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private boolean add4 (Karte[] card, Players player, Karte possible_addStopCard) {
+        ArrayList<Karte> karten = new ArrayList<>();
+        Collections.addAll(karten, card);
+        playedCards.addAll(karten);
+        if (possible_addStopCard.getRules().length == 0) {
+            player.pick(4);
+            return true;
+        }
+        ArrayList <String> rules = new ArrayList<>();
+        Collections.addAll(rules, possible_addStopCard.getRules());
+        if (rules.contains(Spiel.Rules.stopAdd.toString()))  {
+            playedCards.add(possible_addStopCard);
+            if (rules.contains(Spiel.Rules.add2.toString())) {
+                addToPick(2);
+            } else if (rules.contains(Spiel.Rules.add4.toString())) {
+                addToPick(4);
+            }
+            return false;
+        }
+        return true;
+    }
+
 }
