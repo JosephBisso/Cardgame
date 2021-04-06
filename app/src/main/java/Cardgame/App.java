@@ -3,8 +3,6 @@
  */
 package Cardgame;
 
-import GUI.StartScreen;
-
 public class App {
     public String getGreeting() {
         return "Hello World!";
