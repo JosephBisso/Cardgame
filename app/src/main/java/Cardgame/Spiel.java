@@ -11,14 +11,14 @@ public class Spiel {
 
     private final String name;
     private ArrayList<Karte> cards;
-    enum Rules  {
+    public static enum Rules  {
             transparent, command, reverse, skip, add2, add4, passePartout, stopAdd
     }
-    private enum Farben {
-            rot, schwarz, alle2
+    public static enum Farben {
+            rot, schwarz
     }
-    private enum Motiv {
-            herz, pique, chou, losange, joker, alle4
+    public static enum Motiv {
+            herz, pique, chou, losange, joker
     }
 
     public Spiel(String name) {
@@ -37,10 +37,14 @@ public class Spiel {
     public void addCard(String card_wert, int anzahl) throws SpielException {
         switch (anzahl) {
             case 2: {
-                cards.add(new Karte(card_wert, Farben.alle2.toString(), Motiv.joker.toString()));
+                cards.add(new Karte(card_wert, Farben.rot.toString(), Motiv.joker.toString()));
+                cards.add(new Karte(card_wert, Farben.schwarz.toString(), Motiv.joker.toString()));
             }
             case 4: {
-                cards.add(new Karte(card_wert, Farben.alle2.toString(), Motiv.alle4.toString()));
+                cards.add(new Karte(card_wert, Farben.rot.toString(), Motiv.herz.toString()));
+                cards.add(new Karte(card_wert, Farben.rot.toString(), Motiv.losange.toString()));
+                cards.add(new Karte(card_wert, Farben.schwarz.toString(), Motiv.pique.toString()));
+                cards.add(new Karte(card_wert, Farben.schwarz.toString(), Motiv.chou.toString()));
             }
             default: {
                 throw new SpielException("Die gewünschte Anzahl von Karten ist ungültig");
