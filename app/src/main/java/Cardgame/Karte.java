@@ -1,6 +1,7 @@
 package Cardgame;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
 public class Karte {
@@ -13,19 +14,20 @@ public class Karte {
     private String style;
 
     public Karte(String WERT, String farbe, String motiv) throws SpielException {
-
+        if (WERT.equals("COMMAND")) {
+            this.farbe = farbe;
+            this.motiv = motiv;
+            this.WERT = WERT;
+            rules = new ArrayList<>();
+            return;
+        }
         if (farbe.equals("rot") && (motiv.equals("herz") || motiv.equals("losange"))) {
             this.farbe = farbe;
             this.motiv = motiv;
         } else if (farbe.equals("schwarz") && (motiv.equals("pique") || motiv.equals("chou"))) {
             this.farbe = farbe;
             this.motiv = motiv;
-        } else if (farbe.equals("alle2") && motiv.equals("all4")) {
-            anzahl = 4;
-            this.farbe = farbe;
-            this.motiv = motiv;
-        } else if (farbe.equals("alle2") && motiv.equals("joker")) {
-            anzahl = 2;
+        } else if (motiv.equals("joker")) {
             this.farbe = farbe;
             this.motiv = motiv;
         } else if (!(farbe.equals("rot") || farbe.equals("schwarz"))){
@@ -116,5 +118,17 @@ public class Karte {
             return 0;
         }
         return 0;
+    }
+
+    public boolean matches(Karte card) {
+        if (WERT.equals(card.getWERT())) return true;
+        if (motiv.equals(card.getMotiv())) return true;
+        if (motiv.equals(Spiel.Motiv.joker.toString())) {
+            if (farbe.equals(card.getFarbe())) return true;
+        }
+        ArrayList<String> rules = new ArrayList<>();
+        Collections.addAll(rules, card.getRules());
+        if (rules.contains(Spiel.Rules.transparent.toString())) return true;
+        return false;
     }
 }
