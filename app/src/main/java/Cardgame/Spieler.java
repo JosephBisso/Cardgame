@@ -4,22 +4,27 @@ import java.util.ArrayList;
 
 public class Spieler implements Players {
     Deck playingDeck;
-    ArrayList<Karte> Karten;
+    ArrayList<Karte> karten;
 
     public Spieler(Deck deck) {
         deck.addPlayer(this);
         playingDeck = deck;
-        Karten = new ArrayList<>();
+        karten = new ArrayList<>();
     }
 
     public Karte[] play(Karte[] toPlayKarte) {
         boolean[] found = new boolean[toPlayKarte.length];
         int counter = 0;
-        for (Karte card : Karten) {
+        ArrayList<Karte> zuSpielendeKarten = new ArrayList<>();
+        for (Karte card : karten) {
             for (Karte toPlayCard : toPlayKarte) {
                 if (card.equals(toPlayCard)) {
                     found[counter++] = true;
-                    if (boolAreAllTrue(found)) return toPlayKarte;
+                    zuSpielendeKarten.add(card);
+                    if (boolAreAllTrue(found)) {
+                        karten.removeAll(zuSpielendeKarten);
+                        return toPlayKarte;
+                    }
                 }
             }
         }
@@ -27,12 +32,12 @@ public class Spieler implements Players {
     }
 
     public boolean hasCard() {
-        return Karten.size() != 0;
+        return karten.size() != 0;
     }
 
     public void pick(int numberOfCards) {
         for (int i = 0; i < numberOfCards; i++) {
-            Karten.add(playingDeck.getTopCard());
+            karten.add(playingDeck.getTopCard());
         }
     }
 
