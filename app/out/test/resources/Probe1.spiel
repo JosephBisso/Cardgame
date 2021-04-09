@@ -1,0 +1,8 @@
+GAME;Versuch
+CARD;4;A
+Rule for Card A;skip;
+CARD;4;10
+Rule for Card 10;reverse;
+CARD;Loic;schwarz;pique
+CARD;2;Joker
+Rule for Card Joker;add4;stopAdd;

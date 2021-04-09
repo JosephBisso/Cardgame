@@ -1,0 +1,15 @@
+GAME;Versuch
+CARD;A;rot;herz
+Rule for Card A;skip;
+CARD;A;rot;losange
+CARD;A;schwarz;pique
+CARD;A;schwarz;chou
+CARD;10;rot;herz
+Rule for Card 10;reverse;
+CARD;10;rot;losange
+CARD;10;schwarz;pique
+CARD;10;schwarz;chou
+CARD;Loic;schwarz;pique
+CARD;Joker;rot;joker
+Rule for Card Joker;add4;stopAdd;
+CARD;Joker;schwarz;joker
