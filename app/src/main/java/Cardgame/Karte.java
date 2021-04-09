@@ -132,7 +132,11 @@ public class Karte {
         }
         ArrayList<String> rules = new ArrayList<>();
         Collections.addAll(rules, card.getRules());
-        if (rules.contains(Spiel.Rules.transparent.toString())) return true;
-        return false;
+        if (rules.contains(Spiel.Rules.transparent.toString()) ||
+            rules.contains((Spiel.Rules.passePartout.toString()))) return true;
+        rules = new ArrayList<>();
+        Collections.addAll(rules, getRules());
+        return (rules.contains((Spiel.Rules.transparent.toString())) ||
+                rules.contains((Spiel.Rules.passePartout.toString())));
     }
 }
