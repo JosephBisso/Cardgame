@@ -11,13 +11,13 @@ public class Spiel {
 
     private final String name;
     private ArrayList<Karte> cards;
-    public static enum Rules  {
+    public enum Rules  {
             transparent, command, reverse, skip, add2, add4, passePartout, stopAdd
     }
-    public static enum Farben {
+    public enum Farben {
             rot, schwarz
     }
-    public static enum Motiv {
+    public enum Motiv {
             herz, pique, chou, losange, joker
     }
 
@@ -36,19 +36,17 @@ public class Spiel {
 
     public void addCard(String card_wert, int anzahl) throws SpielException {
         switch (anzahl) {
-            case 2: {
+            case 2 -> {
                 cards.add(new Karte(card_wert, Farben.rot.toString(), Motiv.joker.toString()));
                 cards.add(new Karte(card_wert, Farben.schwarz.toString(), Motiv.joker.toString()));
             }
-            case 4: {
+            case 4 -> {
                 cards.add(new Karte(card_wert, Farben.rot.toString(), Motiv.herz.toString()));
                 cards.add(new Karte(card_wert, Farben.rot.toString(), Motiv.losange.toString()));
                 cards.add(new Karte(card_wert, Farben.schwarz.toString(), Motiv.pique.toString()));
                 cards.add(new Karte(card_wert, Farben.schwarz.toString(), Motiv.chou.toString()));
             }
-            default: {
-                throw new SpielException("Die gewünschte Anzahl von Karten ist ungültig");
-            }
+            default -> throw new SpielException("Die gewünschte Anzahl von Karten ist ungültig");
         }
     }
 
@@ -57,17 +55,23 @@ public class Spiel {
         return  cards.toArray(new Karte[0]);
     }
 
-    public void setRules (Karte card, String rule) throws SpielException {
+    public void setRules (String WERT, String rule) throws SpielException {
+        ArrayList<Karte> CardsForRule = new ArrayList<>();
+        for (Karte card : cards) {
+            if (card.getWERT().equals(WERT)) CardsForRule.add(card);
+        }
         for (Rules regel : Rules.values()) {
             if (regel.toString().equals(rule)) {
-                card.addRules(rule);
+                for (Karte card : CardsForRule) {
+                    card.addRules(rule);
+                }
                 return;
             }
         }
         throw new SpielException("Die gewünschte Regel ist ungültig");
     }
 
-    public String[] getAvticeRules() throws SpielException{
+    public String[] getActiveRules() throws SpielException{
         ArrayList<String> activeRules = new ArrayList<>();
 
         if (cards.isEmpty()) {
@@ -94,14 +98,25 @@ public class Spiel {
             if (karte.length == 0) {
                 throw new SpielException("Keine Karte im Spiel vorhanden");
             }
-            for (Karte card : karte) {
-                if (card.getAnzahl() == 2 || card.getAnzahl() == 4) {
-                    writer.printf("CARD;%d;%s\n", card.getAnzahl(), card.getWERT());
-                } else {
-                    writer.printf("CARD;%s;%s;%s\n", card.getWERT(), card.getFarbe(), card.getMotiv());
+            int counter;
+            for (int i = 0; i < karte.length; i++) {
+                if (i > 0 && karte[i].getWERT().equals(karte[i-1].getWERT())) continue;
+                counter = 1;
+                for (int j = i; j < karte.length; j++) {
+                    if ( j + 1 == karte.length) continue;
+                    if (karte[j].getWERT().equals(karte[j + 1].getWERT())) {
+                        counter++;
+                    } else {
+                        break;
+                    }
                 }
-                if (card.getRules().length != 0) {
-                    writer.printf(card.printRule() + "\n");
+                if (counter == 2 || counter == 4) {
+                    writer.printf("CARD;%d;%s\n", counter, karte[i].getWERT());
+                } else {
+                    writer.printf("CARD;%s;%s;%s\n", karte[i].getWERT(), karte[i].getFarbe(), karte[i].getMotiv());
+                }
+                if (karte[i].getRules().length != 0) {
+                    writer.printf(karte[i].printRule() + "\n");
                 }
             }
         } catch (IOException i) {
@@ -135,7 +150,7 @@ public class Spiel {
                         if (!sLine[i].isEmpty()) {
                             for (Karte card : spiel.getCards()) {
                                 if (card.getWERT().equals(sLine[0])) {
-                                    spiel.setRules(card, sLine[i]);
+                                    spiel.setRules(card.getWERT(), sLine[i]);
                                 } else {
                                     throw new SpielException("Diese Karte ist nicht im Spiel vorhanden");
                                 }
@@ -143,11 +158,7 @@ public class Spiel {
                         }
                     }
                 }
-
-
-
             }
-
             return  spiel;
         } catch (FileNotFoundException e) {
             throw new SpielException("Die Datei konnte nicht geöffnet werden");

@@ -76,6 +76,10 @@ public class Karte {
         return anzahl;
     }
 
+    public void setAnzahl(int anzahl) {
+        this.anzahl = anzahl;
+    }
+
     public void setStyle(String style) {
         this.style = style;
     }
