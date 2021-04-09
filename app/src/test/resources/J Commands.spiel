@@ -1,0 +1,21 @@
+GAME;J Comands
+CARD;4;A
+Rule for Card A;skip
+CARD;4;2
+Rule for Card 2;transparent
+CARD;4;3
+CARD;4;4
+CARD;4;5
+CARD;4;6
+CARD;4;7
+Rule for Card 7;add2;stopAdd
+CARD;4;8
+CARD;4;9
+CARD;4;10
+Rule for Card 10;reverse;
+CARD;4;J
+Rule for Card J;command;stopAdd
+CARD;4;Q
+CARD;4;K
+CARD;2;Joker
+Rule for Card A;add4;stopAdd;passePartout

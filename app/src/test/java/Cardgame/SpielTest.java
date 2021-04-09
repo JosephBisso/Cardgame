@@ -81,8 +81,25 @@ public class SpielTest {
     }
 
     @Test
-    public void loadGame_withFullGame_hasAllCards() {
+    public void loadGame_withFullGame_canSaveTheGameagain() throws SpielException {
+        testSpiel = testSpiel.loadGame("src/test/resources/J Commands.spiel");
+        File targetFile = new File(tempDir, "Test3.spiel");
+        testSpiel.saveGame(targetFile.getAbsolutePath());
+        assertNotNull(testSpiel.loadGame(targetFile.getAbsolutePath()));
+    }
 
+    @Test
+    public void loadGame_withJCommands_hasAllCards() throws SpielException {
+        testSpiel = testSpiel.loadGame("src/test/resources/J Commands.spiel");
+        assertEquals(testSpiel.getCards().length, 54);
+    }
+
+    @Test
+    public void loadGame_withJCommands_hasAllRules() throws SpielException {
+        testSpiel = testSpiel.loadGame("src/test/resources/J Commands.spiel");
+        TestUtil.assertArrayEqualsUnordered(testSpiel.getActiveRules(),
+                new String[] {"skip", "transparent", "add2", "stopAdd", "reverse",
+                        "command", "add4", "passePartout"});
     }
 
 }

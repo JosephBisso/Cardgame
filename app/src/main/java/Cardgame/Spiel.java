@@ -58,7 +58,9 @@ public class Spiel {
     public void setRules (String WERT, String rule) throws SpielException {
         ArrayList<Karte> CardsForRule = new ArrayList<>();
         for (Karte card : cards) {
-            if (card.getWERT().equals(WERT)) CardsForRule.add(card);
+            if (card.getWERT().equals(WERT)) {
+                CardsForRule.add(card);
+            }
         }
         for (Rules regel : Rules.values()) {
             if (regel.toString().equals(rule)) {
@@ -146,14 +148,17 @@ public class Spiel {
                     }
                 } else if (sLine[0].contains("Rule for Card ")) {
                     sLine[0] = sLine[0].replace("Rule for Card ", "").trim();
+                    boolean found = false;
                     for (int i = 1; i < sLine.length; i++) {
                         if (!sLine[i].isEmpty()) {
                             for (Karte card : spiel.getCards()) {
                                 if (card.getWERT().equals(sLine[0])) {
                                     spiel.setRules(card.getWERT(), sLine[i]);
-                                } else {
-                                    throw new SpielException("Diese Karte ist nicht im Spiel vorhanden");
+                                    found = true;
                                 }
+                            }
+                            if (!found) {
+                                throw new SpielException("Diese Karte ist nicht im Spiel vorhanden");
                             }
                         }
                     }
