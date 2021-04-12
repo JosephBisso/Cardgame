@@ -3,11 +3,11 @@ package Cardgame;
 import java.util.ArrayList;
 
 public class Spieler implements Players {
-    Deck playingDeck;
-    ArrayList<Karte> karten;
+    private final String NAME = "spieler";
+    private Deck playingDeck;
+    private ArrayList<Karte> karten;
 
     public Spieler(Deck deck) {
-        deck.addPlayer(this);
         playingDeck = deck;
         karten = new ArrayList<>();
     }
@@ -46,4 +46,15 @@ public class Spieler implements Players {
         return true;
     }
 
+    public int getAnzahlCards() {
+        return karten.size();
+    }
+
+    public Karte[] getCards() {
+        return karten.toArray(new Karte[0]);
+    }
+
+    public String getName() {
+        return NAME;
+    }
 }

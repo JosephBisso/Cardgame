@@ -9,25 +9,59 @@ import java.util.Scanner;
 
 public class Spiel {
 
-    private final String name;
+    private String name;
     private ArrayList<Karte> cards;
     public enum Rules  {
             transparent, command, reverse, skip, add2, add4, passePartout, stopAdd
     }
     public enum Farben {
-            rot, schwarz
+            rot, schwarz;
+        public String toEnglish() {
+            if (this == rot) return "red";
+            return "black";
+        }
     }
     public enum Motiv {
-            herz, pique, chou, losange, joker
-    }
+            herz, pique, chou, losange, joker;
+
+        public String toEnglish() {
+                if (this == herz) return "hearts";
+                if (this == pique)return "spades";
+                if (this == chou) return "clubs";
+                if (this == losange) return "diamonds";
+                return "joker";
+            }
+        }
 
     public Spiel(String name) {
         this.name = name;
         cards = new ArrayList<>() ;
     }
 
+    public static Motiv getEquivalentMotiv(String motiv) throws SpielException {
+        for (Motiv motive : Motiv.values()) {
+            if (motiv.equals(motive.toString())) return motive;
+        }
+        throw new SpielException("Das Motiv " + motiv + " exiestiert nicht im Spiel");
+    }
+
+    public static Farben getEquivalentFarbe(String farbe) throws SpielException {
+        for (Farben farben : Farben.values()) {
+            if (farbe.equals(farben.toString())) return farben;
+        }
+        throw new SpielException("Die Farbe " + farbe +  " exiestiert nicht im Spiel");
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getNumberOfCards() {
+        return cards.size();
     }
 
     public void addCard(String card_wert, String farbe, String motiv) throws SpielException {

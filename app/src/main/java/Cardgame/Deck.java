@@ -1,13 +1,16 @@
 package Cardgame;
 
+import javax.swing.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class Deck {
 
+    private int style;
     private static int deckID = 0;
     private String deckName_id = "Deck;";
-    private final Spiel playingGame;
+    private Spiel playingGame;
     private boolean moreThanOneCard_isEnabled = false;
     private String activeRule = "";
     private ArrayList<Players> listPlayers;
@@ -15,10 +18,10 @@ public class Deck {
     private ArrayList<Karte> playedCards;
     private Karte lasPlayedCard;
     private int toPick = 0;
-    private enum Style {
-        one, two, three, four
-    }
 
+    public Deck() {
+
+    }
     public Deck(Spiel spiel) {
         playingGame = spiel;
         deckName_id += ++deckID + ";" + spiel.getName();
@@ -27,6 +30,40 @@ public class Deck {
         Collections.addAll(playableCards, spiel.getCards());
         mix(playableCards);
         playedCards = new ArrayList<>();
+    }
+
+    public void setStyle(int styleFromCombo) throws SpielException {
+        style = styleFromCombo;
+        String pfad;
+        String restPfad;
+
+        switch (styleFromCombo) {
+            case 1 -> {
+                pfad = "app/src/main/resources/Card Set One";
+                File folder = new File(pfad);
+                File[] listCards = folder.listFiles();
+
+                for (Karte karte : playableCards) {
+                    restPfad = Spiel.getEquivalentMotiv(karte.getMotiv()).toEnglish() +
+                            "_" + karte.getWERT() + ".png";
+
+                    for (File cardsFile : listCards) {
+                        if (!karte.getWERT().equals("Joker") &&
+                               cardsFile.getName().equals(restPfad.toLowerCase())) {
+
+                            karte.setStyle(new ImageIcon(cardsFile.getAbsolutePath()));
+                        } else if (karte.getWERT().equals("Joker")) {
+                            restPfad = Spiel.getEquivalentMotiv(karte.getMotiv()).toEnglish() +
+                                    "_" + Spiel.getEquivalentFarbe(karte.getFarbe()).toEnglish() +
+                                    ".png";
+                            if (cardsFile.getName().equals(restPfad.toLowerCase())) {
+                                karte.setStyle(new ImageIcon(cardsFile.getAbsolutePath()));
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public String getActiveRule() {
@@ -101,7 +138,7 @@ public class Deck {
             player.pick(numberCard_forPlayers);
         }
         boolean[] playerHasCard = new boolean[listPlayers.size()];
-        while (Spieler.boolAreAllTrue(playerHasCard)) {
+        while (allPlayersHaveCard()) {
 
         }
     }
@@ -183,6 +220,15 @@ public class Deck {
                 addToPick(4);
             }
             return false;
+        }
+        return true;
+    }
+
+    private boolean allPlayersHaveCard() {
+        for (Players player : listPlayers) {
+            if (!player.hasCard()) {
+                return false;
+            }
         }
         return true;
     }

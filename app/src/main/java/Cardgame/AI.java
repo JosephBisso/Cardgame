@@ -3,17 +3,32 @@ package Cardgame;
 import java.util.ArrayList;
 
 public class AI implements Players {
-    Deck playingDeck;
-    ArrayList<Karte> Karten;
+
+    private Deck playingDeck;
+    private ArrayList<Karte> karten;
+    private static int ID = 0;
+    private String name;
+
+
+    public AI (Deck deck) {
+        playingDeck = deck;
+        name = "AI_" + ++ID;
+        karten = new ArrayList<>();
+    }
 
     public Karte[] play(Karte[] toPlayKarte) {
         boolean[] found = new boolean[toPlayKarte.length];
         int counter = 0;
-        for (Karte card : Karten) {
+        ArrayList<Karte> zuSpielendeKarten = new ArrayList<>();
+        for (Karte card : karten) {
             for (Karte toPlayCard : toPlayKarte) {
                 if (card.equals(toPlayCard)) {
                     found[counter++] = true;
-                    if (Spieler.boolAreAllTrue(found)) return toPlayKarte;
+                    zuSpielendeKarten.add(card);
+                    if (Spieler.boolAreAllTrue(found)) {
+                        karten.removeAll(zuSpielendeKarten);
+                        return toPlayKarte;
+                    }
                 }
             }
         }
@@ -21,12 +36,24 @@ public class AI implements Players {
     }
 
     public boolean hasCard() {
-        return Karten.size() != 0;
+        return karten.size() != 0;
     }
 
     public void pick(int numberOfCards) {
         for (int i = 0; i < numberOfCards; i++) {
-            Karten.add(playingDeck.getTopCard());
+            karten.add(playingDeck.getTopCard());
         }
+    }
+
+    public int getAnzahlCards() {
+        return karten.size();
+    }
+
+    public Karte[] getCards() {
+        return karten.toArray(new Karte[0]);
+    }
+
+    public String getName() {
+        return name;
     }
 }

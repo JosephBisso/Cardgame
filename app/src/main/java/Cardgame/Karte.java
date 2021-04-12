@@ -1,5 +1,6 @@
 package Cardgame;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
@@ -11,7 +12,7 @@ public class Karte {
     private final String motiv;
     private ArrayList<String> rules;
     private int anzahl;
-    private String style;
+    private ImageIcon style;
 
     public Karte(String WERT, String farbe, String motiv) throws SpielException {
         if (WERT.equals("COMMAND")) {
@@ -80,11 +81,11 @@ public class Karte {
         this.anzahl = anzahl;
     }
 
-    public void setStyle(String style) {
+    public void setStyle(ImageIcon style) {
         this.style = style;
     }
 
-    public String getStyle() {
+    public ImageIcon getStyle() {
         return style;
     }
 
@@ -138,5 +139,9 @@ public class Karte {
         Collections.addAll(rules, getRules());
         return (rules.contains((Spiel.Rules.transparent.toString())) ||
                 rules.contains((Spiel.Rules.passePartout.toString())));
+    }
+
+    public String print() {
+        return "Card: " +  WERT + "; Motiv: " + motiv + "; Color: " + farbe;
     }
 }
