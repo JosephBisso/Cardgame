@@ -101,7 +101,7 @@
                   <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Label"/>
+                  <text value="Difficulty"/>
                 </properties>
               </component>
               <component id="74dbc" class="javax.swing.JSlider" binding="slider1" default-binding="true">
@@ -120,11 +120,17 @@
                   <text value="Number Opponent"/>
                 </properties>
               </component>
-              <component id="2d359" class="javax.swing.JSpinner" binding="spinner_numberOponnent">
+              <component id="cd5a0" class="javax.swing.JComboBox" binding="comboBox_anzahlOponnent">
                 <constraints>
-                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties/>
+                <properties>
+                  <model>
+                    <item value="1"/>
+                    <item value="2"/>
+                    <item value="3"/>
+                  </model>
+                </properties>
               </component>
             </children>
           </grid>
