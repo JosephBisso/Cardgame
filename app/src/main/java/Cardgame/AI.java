@@ -27,6 +27,7 @@ public class AI implements Players {
                     zuSpielendeKarten.add(card);
                     if (Spieler.boolAreAllTrue(found)) {
                         karten.removeAll(zuSpielendeKarten);
+                        playingDeck.addPlayedCards(zuSpielendeKarten.toArray(new Karte[0]));
                         return toPlayKarte;
                     }
                 }

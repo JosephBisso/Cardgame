@@ -3,6 +3,7 @@ package Cardgame;
 import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class Deck {
@@ -99,6 +100,7 @@ public class Deck {
     }
 
     public Karte getLasPlayedCard() {
+        lasPlayedCard = playedCards.get(playedCards.size() - 1);
         return lasPlayedCard;
     }
 
@@ -231,6 +233,23 @@ public class Deck {
             }
         }
         return true;
+    }
+
+    public void addPlayedCards(Karte[] playedCards) {
+        Collections.addAll(this.playedCards, playedCards);
+        lasPlayedCard = playedCards[playedCards.length -1];
+    }
+
+    public Karte giveOneCard() {
+        for (Karte karte : playableCards) {
+            if (karte.getRules().length == 0) {
+                lasPlayedCard = karte;
+                playableCards.remove(karte);
+                playedCards.add(karte);
+                 return lasPlayedCard;
+            }
+        }
+        return null;
     }
 
 }

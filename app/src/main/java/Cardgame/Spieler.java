@@ -1,6 +1,7 @@
 package Cardgame;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Spieler implements Players {
     private final String NAME = "spieler";
@@ -16,13 +17,14 @@ public class Spieler implements Players {
         boolean[] found = new boolean[toPlayKarte.length];
         int counter = 0;
         ArrayList<Karte> zuSpielendeKarten = new ArrayList<>();
-        for (Karte card : karten) {
-            for (Karte toPlayCard : toPlayKarte) {
+        for (Karte toPlayCard : toPlayKarte) {
+            for (Karte card : karten) {
                 if (card.equals(toPlayCard)) {
                     found[counter++] = true;
                     zuSpielendeKarten.add(card);
                     if (boolAreAllTrue(found)) {
                         karten.removeAll(zuSpielendeKarten);
+                        playingDeck.addPlayedCards(zuSpielendeKarten.toArray(new Karte[0]));
                         return toPlayKarte;
                     }
                 }

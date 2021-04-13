@@ -141,7 +141,19 @@ public class Karte {
                 rules.contains((Spiel.Rules.passePartout.toString())));
     }
 
+    public boolean matchesForPlay(Karte card) {
+        return this.WERT.equals(card.getWERT());
+    }
+
     public String print() {
-        return "Card: " +  WERT + "; Motiv: " + motiv + "; Color: " + farbe;
+        try {
+            return "CARD: " +  WERT + ";    MOTIV: " +
+                    Spiel.getEquivalentMotiv(motiv).toEnglish() + ";    COLOR: " +
+                    Spiel.getEquivalentFarbe(farbe).toEnglish();
+        } catch (SpielException e) {
+            e.printStackTrace();
+            return "";
+        }
+
     }
 }
