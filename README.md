@@ -1,6 +1,8 @@
 # Cardgame
 Fun app to play your favorite card game
-[![GitHub tag](https://img.shields.io/github/tag/JosephBisso/Cardgame.svg)](https://GitHub.com/JosephBisso/Cardgame/tags/)
+
+Currently on the making -> [![GitHub tag](https://img.shields.io/github/tag/JosephBisso/Cardgame.svg)](https://GitHub.com/JosephBisso/Cardgame/tags/)
+
 
 
 <details><summary> Preview </summary><p>
