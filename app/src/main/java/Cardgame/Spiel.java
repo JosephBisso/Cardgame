@@ -12,7 +12,19 @@ public class Spiel {
     private String name;
     private ArrayList<Karte> cards;
     public enum Rules  {
-            transparent, command, reverse, skip, add2, add4, passePartout, stopAdd
+            transparent, command, reverse, skip, add2, add4, passePartout, stopAdd;
+
+            public int getRuleID() {
+                if (this == transparent) return 1;
+                if (this == command) return 2;
+                if (this == reverse) return 3;
+                if (this == skip) return 4;
+                if (this == add2) return 5;
+                if (this == add4) return 6;
+                if (this == passePartout) return 7;
+                if (this == stopAdd) return 8;
+                return 0;
+            }
     }
     public enum Farben {
             rot, schwarz;
@@ -31,7 +43,13 @@ public class Spiel {
                 if (this == losange) return "diamonds";
                 return "joker";
             }
+
+        public String getFarbe_exeptJoker() throws SpielException {
+            if (this == herz || this == losange) return Farben.rot.toString();
+            if (this == pique || this == chou) return  Farben.schwarz.toString();
+            throw new SpielException("Zum diesem Motiv wurde keine Farbe gefunden");
         }
+    }
 
     public Spiel(String name) {
         this.name = name;
@@ -50,6 +68,13 @@ public class Spiel {
             if (farbe.equals(farben.toString())) return farben;
         }
         throw new SpielException("Die Farbe " + farbe +  " exiestiert nicht im Spiel");
+    }
+
+    public static Rules getEquivalentRule(String rule) throws SpielException {
+        for (Rules rules : Rules.values()) {
+            if (rule.equals(rules.toString())) return rules;
+        }
+        throw new SpielException("Die Regel " + rule + " exiestiert nicht im Spiel");
     }
 
     public String getName() {
@@ -99,7 +124,20 @@ public class Spiel {
         for (Rules regel : Rules.values()) {
             if (regel.toString().equals(rule)) {
                 for (Karte card : CardsForRule) {
-                    card.addRules(rule);
+                    if (card.getRules().length == 0) {
+                        card.addRules(rule);
+                    } else {
+                        boolean found = false;
+                        for (String regeln : card.getRules()) {
+                            if (regeln.equals(rule)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            card.addRules(rule);
+                        }
+                    }
                 }
                 return;
             }

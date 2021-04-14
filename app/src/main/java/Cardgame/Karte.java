@@ -128,17 +128,21 @@ public class Karte {
     public boolean matches(Karte card) {
         if (WERT.equals(card.getWERT())) return true;
         if (motiv.equals(card.getMotiv())) return true;
-        if (motiv.equals(Spiel.Motiv.joker.toString())) {
-            if (farbe.equals(card.getFarbe())) return true;
+        if (motiv.equals(Spiel.Motiv.joker.toString()) ||
+                card.getMotiv().equals(Spiel.Motiv.joker.toString())) {
+            if (farbe.equals(card.getFarbe()) || motiv.equals(card.getMotiv())) return true;
         }
+        ArrayList<String> rules_toBePlayed = new ArrayList<>();
+        Collections.addAll(rules_toBePlayed, card.getRules());
+        if (rules_toBePlayed.contains(Spiel.Rules.transparent.toString()) ||
+            rules_toBePlayed.contains((Spiel.Rules.passePartout.toString()))) return true;
         ArrayList<String> rules = new ArrayList<>();
-        Collections.addAll(rules, card.getRules());
-        if (rules.contains(Spiel.Rules.transparent.toString()) ||
-            rules.contains((Spiel.Rules.passePartout.toString()))) return true;
-        rules = new ArrayList<>();
         Collections.addAll(rules, getRules());
-        return (rules.contains((Spiel.Rules.transparent.toString())) ||
-                rules.contains((Spiel.Rules.passePartout.toString())));
+        if (rules.contains((Spiel.Rules.transparent.toString())) ||
+                rules.contains((Spiel.Rules.passePartout.toString()))) return true;
+        return (rules.contains(Spiel.Rules.add2.toString()) || rules.contains(Spiel.Rules.add4.toString()))
+                && rules_toBePlayed.contains(Spiel.Rules.stopAdd);
+
     }
 
     public boolean matchesForPlay(Karte card) {

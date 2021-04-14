@@ -3,7 +3,6 @@ package Cardgame;
 import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class Deck {
@@ -18,11 +17,9 @@ public class Deck {
     private ArrayList<Karte> playableCards;
     private ArrayList<Karte> playedCards;
     private Karte lasPlayedCard;
+    private Karte commandedCard;
     private int toPick = 0;
 
-    public Deck() {
-
-    }
     public Deck(Spiel spiel) {
         playingGame = spiel;
         deckName_id += ++deckID + ";" + spiel.getName();
@@ -159,14 +156,10 @@ public class Deck {
     }
 
     private void commands(Karte[] card, String motiv) throws SpielException {
-        try {
-            setLasPlayedCard(new Karte("COMMAND", "all2", motiv));
-            ArrayList<Karte> karten = new ArrayList<>();
-            Collections.addAll(karten, card);
-            playedCards.addAll(karten);
-        } catch (SpielException e) {
-            throw e;
-        }
+        setCommandedCard(motiv);
+        ArrayList<Karte> karten = new ArrayList<>();
+        Collections.addAll(karten, card);
+        playedCards.addAll(karten);
     }
 
     private void reverse(Karte[] card) {
@@ -226,7 +219,7 @@ public class Deck {
         return true;
     }
 
-    private boolean allPlayersHaveCard() {
+    public boolean allPlayersHaveCard() {
         for (Players player : listPlayers) {
             if (!player.hasCard()) {
                 return false;
@@ -236,6 +229,21 @@ public class Deck {
     }
 
     public void addPlayedCards(Karte[] playedCards) {
+        for (Karte zuSpielendeKarte : playedCards) {
+            if (zuSpielendeKarte.hasRule()) {
+                try {
+                    for (String string_rule : zuSpielendeKarte.getRules()) {
+                        if (Spiel.getEquivalentRule(string_rule).getRuleID() == 1) {
+                            beTransparent(playedCards);
+                            return;
+                        }
+                    }
+
+                } catch (SpielException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         Collections.addAll(this.playedCards, playedCards);
         lasPlayedCard = playedCards[playedCards.length -1];
     }
@@ -252,4 +260,22 @@ public class Deck {
         return null;
     }
 
+    public void setCommandedCard(String motiv) throws SpielException{
+        for (Spiel.Motiv motive : Spiel.Motiv.values()) {
+            if (motive.toEnglish().equals(motiv)) {
+                commandedCard = new Karte("commanded Card",
+                        motive.getFarbe_exeptJoker(), motive.toString());
+                return;
+            }
+        }
+        throw new SpielException("Es könnte keine commanded Card festgelegt werden");
+    }
+
+    public Karte getCommandedCard() {
+        return commandedCard;
+    }
+
+    public void resetCommandedCard() {
+        commandedCard = null;
+    }
 }
