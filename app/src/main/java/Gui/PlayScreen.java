@@ -40,7 +40,7 @@ public class PlayScreen extends JFrame {
                 for (int i = 0; i < anzahlPlayers; i++) {
                     deck.addPlayer(new AI(deck));
                 }
-                JOptionPane.showMessageDialog(null, "Game Starts...",
+                JOptionPane.showMessageDialog(null, "Game Starts. You play first",
                         "Success", JOptionPane.INFORMATION_MESSAGE);
                 GamePlayScreen gameplay = new GamePlayScreen(deck);
             }
