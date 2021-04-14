@@ -18,4 +18,4 @@ Rule for Card Jack;command;stopAdd
 CARD;4;Queen
 CARD;4;King
 CARD;2;Joker
-Rule for Card Joker;add4;stopAdd;passePartout
+Rule for Card Joker;add4;stopAdd;

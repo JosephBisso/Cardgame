@@ -18,4 +18,4 @@ Rule for Card J;command;stopAdd
 CARD;4;Q
 CARD;4;K
 CARD;2;Joker
-Rule for Card A;add4;stopAdd;passePartout
+Rule for Card A;add4;stopAdd
