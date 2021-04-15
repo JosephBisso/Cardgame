@@ -1,5 +1,5 @@
 # Cardgame
-Fun app to play your favorite card game
+Fun app to play your favorite card game against computer opponents
 
 Currently on the making -> [![GitHub tag](https://img.shields.io/github/tag/JosephBisso/Cardgame.svg)](https://GitHub.com/JosephBisso/Cardgame/tags/)
 
