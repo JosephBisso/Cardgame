@@ -10,7 +10,9 @@ public class AI implements Players {
     private static int ID = 0;
     private String name;
     private boolean hasCardtoPlay = false;
+    private boolean hasCardToBlockAdd = false;
     private Karte lastCardPlayed;
+    private boolean gotSkipped = false;
 
 
     public AI (Deck deck) {
@@ -69,14 +71,37 @@ public class AI implements Players {
     public Karte[] preparedPossibleCardsToPlay() {
         hasCardtoPlay = false;
         ArrayList<Karte> toPlayKarten = new ArrayList<>();
-        for (Karte karte : karten) {
-            if (playingDeck.getCommandedCard() == null) {
+        a: for (Karte karte : karten) {
+            if (playingDeck.getToPick() > 0) {
+                if (karte.hasRule()) {
+                    for (String rules : karte.getRules()) {
+                        if (rules.equals(Spiel.Rules.add4.toString())) {
+                            toPlayKarten.add(karte);
+                            hasCardToBlockAdd = true;
+                            break a;
+                        }
+                        if (rules.equals(Spiel.Rules.add2.toString())) {
+                            toPlayKarten.add(karte);
+                            hasCardToBlockAdd = true;
+                            break a;
+                        }
+                        if (rules.equals(Spiel.Rules.stopAdd.toString())) {
+                            toPlayKarten.add(karte);
+                            hasCardToBlockAdd = true;
+                            break a;
+                        }
+                    }
+                } else {
+                    hasCardToBlockAdd = false;
+                }
+            } else if (playingDeck.getCommandedCard() == null) {
                 if (karte.matches(playingDeck.getLasPlayedCard())) {
                     toPlayKarten.add(karte);
                     break;
                 }
             } else {
-                if (karte.matches(playingDeck.getCommandedCard())) {
+                if (karte.matches(playingDeck.getCommandedCard()) ||
+                        (karte.hasRule(Spiel.Rules.command) && karte.matches(playingDeck.getLasPlayedCard()))) {
                     toPlayKarten.add(karte);
                     playingDeck.resetCommandedCard();
                     break;
@@ -103,6 +128,10 @@ public class AI implements Players {
         return hasCardtoPlay;
     }
 
+    public boolean HasCardToBlockAdd() {
+        return hasCardToBlockAdd;
+    }
+
     public String getMostFrequentMotiv() throws SpielException{
         ArrayList<String> motive = new ArrayList<>();
         for (Karte karte : karten) motive.add(karte.getMotiv());
@@ -117,7 +146,24 @@ public class AI implements Players {
             case 1 -> {return Spiel.Motiv.losange.toString();}
             case 2 -> {return Spiel.Motiv.pique.toString();}
             case 3 -> {return Spiel.Motiv.chou.toString();}
-            default -> {throw new SpielException("Es kann keine Frequen berechnet werden");}
+            default -> throw new SpielException("Es kann keine Frequen berechnet werden");
         }
+    }
+
+    public void resetLastCardPlayed() {
+        this.lastCardPlayed = null;
+    }
+
+    public boolean gotSkipped() {
+        if (gotSkipped) {
+            gotSkipped = false;
+            return true;
+        }
+        return false;
+    }
+
+    public void set_gotSkipped(boolean gotSkipped) {
+        this.gotSkipped = gotSkipped;
+        if (gotSkipped) lastCardPlayed = null;
     }
 }
