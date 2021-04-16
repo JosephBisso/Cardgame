@@ -11,6 +11,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class GamePlayScreen extends JFrame {
     private Deck deck;
@@ -18,6 +20,7 @@ public class GamePlayScreen extends JFrame {
     private ArrayList<String> AINamen;
     private ArrayList<String> copyAINamen;
 
+    private JFrame frame;
     private JPanel mainPanel_Gameplay;
     private JLabel numberCardPlayer1;
     private JLabel numberCardPlayer2;
@@ -65,6 +68,10 @@ public class GamePlayScreen extends JFrame {
     private JLabel label_LastCardPLayedP1;
     private JLabel label_LastCardPLayedP2;
     private JLabel label_LastCardPLayedP3;
+    private JPanel pannel_p1;
+    private JPanel pannel_p2;
+    private JPanel pannel_p3;
+    private JLabel label_arrowOderOfPlay;
     private JPanel panel_scrollbar;
 
     private JLabel[] label_yourCardsIMG = {label_CardIMG0, label_CardIMG1, label_CardIMG2, label_CardIMG3,label_CardIMG4,
@@ -79,6 +86,10 @@ public class GamePlayScreen extends JFrame {
     private Players[] array_players;
     private boolean spielerHasPlayed = false;
     private  int numberSlot = 0;
+    Color defaultBackgroundColor;
+    private int counter = 0;
+    private int playerHaveToPick = -99;
+    private boolean gameEnded = false;
 
     public GamePlayScreen(Deck deck) {
         this.deck = deck;
@@ -86,13 +97,14 @@ public class GamePlayScreen extends JFrame {
         index_cardsToBePlayed = new ArrayList<>();
         arrayList_cardsToBePlayed = new ArrayList<>();
         copyAINamen = new ArrayList<>();
-        JFrame frame = new JFrame("GamePlayScreen");
+        frame = new JFrame("GamePlayScreen");
         frame.setContentPane(mainPanel_Gameplay);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         frame.pack();
         frame.setVisible(true);
 
+        defaultBackgroundColor = pannel_p1.getBackground();
         initializeGame();
         resetButton.addActionListener(new ActionListener() {
             @Override
@@ -404,11 +416,7 @@ public class GamePlayScreen extends JFrame {
         playerKarten = karten;
         previousSlotsButton.setEnabled(false);
         numberSlot = 0;
-        if (karten.length > label_yourCardsIMG.length) {
-            nextSlotsButton.setEnabled(true);
-        } else {
-            nextSlotsButton.setEnabled(false);
-        }
+        nextSlotsButton.setEnabled(karten.length > label_yourCardsIMG.length);
         for(int i = 0; i < karten.length; i++) {
             if (!(label_yourCards[i].isEnabled() && label_yourCards[i].isVisible())) {
                 label_yourCards[i].setVisible(true);
@@ -478,18 +486,29 @@ public class GamePlayScreen extends JFrame {
         for (int i : index_cardsToBePlayed) {
             arrayList_cardsToBePlayed.add(playerKarten[i]);
         }
-        if (deck.getCommandedCard() != null) {
-            if (!arrayList_cardsToBePlayed.get(0).matches(deck.getCommandedCard())) {
+        if (playerHaveToPick == 3 || playerHaveToPick == 2 || playerHaveToPick == 1) {
+            if (!playerPlayedWisely()) {
+                cardsToBePlayed = "";
+                label_addedCards.setText(cardsToBePlayed);
+                index_cardsToBePlayed.clear();
+                arrayList_cardsToBePlayed.clear();
+            }
+        } else if (deck.getCommandedCard() != null) {
+            if (!arrayList_cardsToBePlayed.get(0).matches(deck.getCommandedCard()) ||
+                    (arrayList_cardsToBePlayed.get(0).hasRule(Spiel.Rules.command) &&
+                    !arrayList_cardsToBePlayed.get(0).matches(deck.getLasPlayedCard()))) {
                 JOptionPane.showMessageDialog(null,
                         arrayList_cardsToBePlayed.get(0).print() +
                                 "\ndoes not matches with\n" +
-                                deck.getLasPlayedCard().print() + "\nWhich was COMMANDED!!",
+                                deck.getCommandedCard().print() + "\nWhich was COMMANDED!!",
                         "Error", JOptionPane.WARNING_MESSAGE);
                 cardsToBePlayed = "";
                 label_addedCards.setText(cardsToBePlayed);
                 index_cardsToBePlayed.clear();
                 arrayList_cardsToBePlayed.clear();
                 return;
+            } else if(arrayList_cardsToBePlayed.get(0).hasRule(Spiel.Rules.transparent)) {
+
             } else {
                 deck.resetCommandedCard();
             }
@@ -544,41 +563,199 @@ public class GamePlayScreen extends JFrame {
         setIconTableCard();
     }
 
+    private boolean playerPlayedWisely() {
+        switch (playerHaveToPick) {
+            case 3 -> {
+                if (!arrayList_cardsToBePlayed.get(0).hasRule(Spiel.Rules.add4)) {
+                    JOptionPane.showMessageDialog(null,"You pick " +
+                                    deck.getToPick() + " Cards","Be Careful",
+                            JOptionPane.WARNING_MESSAGE);
+                    player.pick(deck.getToPick());
+                    deck.resetToPick();
+                    return false;
+                }
+            }
+            case 2 -> {
+                if (!arrayList_cardsToBePlayed.get(0).hasRule(Spiel.Rules.add2)) {
+                    JOptionPane.showMessageDialog(null,"You pick " +
+                                    deck.getToPick() + " Cards","Be Careful",
+                            JOptionPane.WARNING_MESSAGE);
+                    player.pick(deck.getToPick());
+                    deck.resetToPick();
+                    return false;
+                }
+            }
+            case 1 -> {
+                if (!arrayList_cardsToBePlayed.get(0).hasRule(Spiel.Rules.stopAdd)) {
+                    JOptionPane.showMessageDialog(null,"You pick " +
+                                    deck.getToPick() + " Cards","Be Careful",
+                            JOptionPane.WARNING_MESSAGE);
+                    player.pick(deck.getToPick());
+                    deck.resetToPick();
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private void doRule(Karte[] cards) throws SpielException{
         for (Karte karte : cards) {
             if (!karte.hasRule()) return;
             for (String rules : karte.getRules()) {
                 switch (Spiel.getEquivalentRule(rules).getRuleID()) {
                     case 2 -> {
-                        CommandDialog commandDialog = new CommandDialog();
-                        commandDialog.exec();
-                        if (commandDialog.isMotivCommanded()) {
-                            deck.setCommandedCard(commandDialog.getCommandedMotiv());
+                        if (deck.getToPick() > 0) {
+                            deck.resetToPick();
                         } else {
+                            CommandDialog commandDialog = new CommandDialog();
+                            commandDialog.exec();
+                            if (commandDialog.isMotivCommanded()) {
+                                deck.setCommandedCard(commandDialog.getCommandedMotiv());
+                            }
+                            return;
                         }
-                        return;
                     }
-                    case 3 -> {
-                        Collections.reverse(AINamen);
+                    case 3 ->  {
+                        array_players = Deck.reverse(array_players);
+                        if (label_arrowOderOfPlay.getText().equals(">>>")) {
+                            label_arrowOderOfPlay.setText("<<<");
+                        } else {
+                            label_arrowOderOfPlay.setText(">>>");
+                        }
                     }
+                    case 4 -> {
+                        ArrayList<Players> tempPLayerList = new ArrayList<>();
+                        Collections.addAll(tempPLayerList, array_players);
+                        counter = tempPLayerList.indexOf(player);
+                        if (counter != 0) {
+                            if (counter + 1 >= array_players.length) {
+                                counter = 0;
+                            }
+                            if (array_players[counter].hasCard()) {
+                                ((AI) array_players[counter]).set_gotSkipped(true);
+                            }
+                        } else {
+                            counter = 1;
+                            ((AI) array_players[counter]).set_gotSkipped(true);
+                        }
+                        setNumberCardPlayer_andLastPLayedCard((AI) array_players[counter++]);
+                    }
+                    case 5 -> doAdd2_or_4(2);
+                    case 6 -> doAdd2_or_4(4);
                 }
             }
         }
     }
 
-    private void doRule_forAI(Karte[] cards, AI AIx) throws SpielException{
+    private String doRule_forAI(Karte[] cards, AI AIx) throws SpielException{
         for (Karte karte : cards) {
-            if (!karte.hasRule()) return;
+            if (!karte.hasRule()) return "";
             for (String rules : karte.getRules()) {
                 switch (Spiel.getEquivalentRule(rules).getRuleID()) {
                     case 2 -> {
-                        deck.setCommandedCard(Spiel.getEquivalentMotiv(AIx.getMostFrequentMotiv()).toEnglish());
+                        if (deck.getToPick() > 0) {
+                            deck.resetToPick();
+                        } else {
+                            deck.setCommandedCard(Spiel.getEquivalentMotiv(AIx.getMostFrequentMotiv()).toEnglish());
+                            return " commanded: " + deck.getCommandedCard().print();
+                        }
                     }
                     case 3 -> {
-                        Collections.reverse(AINamen);
+                        array_players = Deck.reverse(array_players);
+                        if (label_arrowOderOfPlay.getText().equals(">>>")) {
+                            label_arrowOderOfPlay.setText("<<<");
+                        } else {
+                          label_arrowOderOfPlay.setText(">>>");
+                        }
+                        return " reversed the Order of plays!";
+                    }
+                    case 4 -> {
+                        try {
+                            if (array_players[++counter] instanceof AI) {
+                                if (array_players[counter].hasCard()) {
+                                    ((AI) array_players[counter]).set_gotSkipped(true);
+                                    setNumberCardPlayer_andLastPLayedCard((AI) array_players[counter]);
+                                    return " used Skip on the next AI";
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(null,
+                                        "You got skipped" ,"Be Careful", JOptionPane.WARNING_MESSAGE);
+                                pickButton.setEnabled(false);
+
+                                ArrayList<Players> tempPLayerList = new ArrayList<>();
+                                Collections.addAll(tempPLayerList, array_players);
+                                counter = tempPLayerList.indexOf(player);
+                                if (counter == array_players.length - 1) {
+                                    counter = -1;
+                                }
+                                return " used Skip on YOU";
+                            }
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            counter = 0;
+                            if (array_players[counter] instanceof AI) {
+                                if ( array_players[counter] == AIx) counter++;
+                                ((AI) array_players[counter]).set_gotSkipped(true);
+                                setNumberCardPlayer_andLastPLayedCard((AI) array_players[counter]);
+                                return " used Skip on the next AI";
+                            } else {
+                                JOptionPane.showMessageDialog(null,
+                                      "You got skipped" ,"Be Careful", JOptionPane.WARNING_MESSAGE);
+                                pickButton.setEnabled(false);
+
+                                ArrayList<Players> tempPLayerList = new ArrayList<>();
+                                Collections.addAll(tempPLayerList, array_players);
+                                counter = tempPLayerList.indexOf(player);
+                                if (counter == array_players.length - 1) {
+                                    counter = -1;
+                                }
+                                return " used Skip on YOU";
+                            }
+                        }
+                    }
+                    case 5 -> {
+                        doAdd2_or_4(2);
+                        return " used A Pick 2 Card";
+                    }
+                    case 6 -> {
+                        doAdd2_or_4(4);
+                        return " used A Pick 4 Card";
                     }
                 }
             }
+        }
+        return "";
+    }
+
+    private void doAdd2_or_4(int anzahlCardToAdd) {
+        if (anzahlCardToAdd == 2) {
+            deck.addToPick(2);
+            return;
+        }
+        deck.addToPick(4);
+    }
+
+    private int doAddCard_forPlayerToPick() {
+        switch (deck.add2(player)) {
+            case 3 -> {
+                JOptionPane.showMessageDialog(null,"Play wisely or You'll pick " +
+                        deck.getToPick(), "Be Careful", JOptionPane.WARNING_MESSAGE);
+                pickButton.setEnabled(false);
+                return 3;
+            }
+            case 2 -> {
+                JOptionPane.showMessageDialog(null,"Play wisely or You'll pick " +
+                        deck.getToPick(), "Be Careful", JOptionPane.WARNING_MESSAGE);
+                pickButton.setEnabled(false);
+                return 2;
+            }
+            case 1 -> {
+                JOptionPane.showMessageDialog(null,"Play wisely or You'll pick " +
+                        deck.getToPick(), "Be Careful", JOptionPane.WARNING_MESSAGE);
+                pickButton.setEnabled(false);
+                return 1;
+            }
+            default -> {return 0;}
         }
     }
 
@@ -587,63 +764,178 @@ public class GamePlayScreen extends JFrame {
         pickButton.setEnabled(false);
         resetButton.setEnabled(false);
 
+        if (gameEnded) return;
+
         JOptionPane.showMessageDialog(null,"AIs Turn",
                 "Wait ", JOptionPane.WARNING_MESSAGE);
 
-        for (String AIName : AINamen) {
-            AI AIx = (AI) getAI(AIName);
+        ArrayList<Players> list_player =new ArrayList<>();
+        Collections.addAll(list_player, players);
+
+        while (counter < players.length){
+            Players player = players[counter];
+            if (player instanceof Spieler) {
+                if (!player.hasCard()) break;
+                counter++;
+                continue;
+            }
+            AI AIx = getAI(player.getName());
             if (AIx.hasCard()) {
                 Karte[] AIPossibleCards = AIx.preparedPossibleCardsToPlay();
                 if (AIx.hasCardtoPlayTurn()) {
                     AIx.play(AIPossibleCards);
                     try {
-                        doRule_forAI(AIPossibleCards, AIx);
+                        String ruleDone = doRule_forAI(AIPossibleCards, AIx);
+                        if (!ruleDone.isEmpty()) {
+                            textField_whoWon.setText(AIx.getName() + ruleDone);
+                        } else {
+                            textField_whoWon.setText("");
+                        }
                     } catch (SpielException e) {
                         e.printStackTrace();
                     }
+                } else if (deck.getToPick() > 0 && !AIx.HasCardToBlockAdd()) {
+                    AIx.pick(deck.getToPick());
+                    textField_whoWon.setText(AIx.getName() + " picked " + deck.getToPick() + " Cards!!");
+                    deck.resetToPick();
                 } else {
                     AIx.pick(1);
                 }
             }
-            if (!AIx.hasCard()) break;
-        }
-        numberCardPlayer1.setText(Integer.toString(getAI(copyAINamen.get(0)).getAnzahlCards()));
-        numberCardPlayer2.setText(Integer.toString(getAI(copyAINamen.get(1)).getAnzahlCards()));
-        numberCardPlayer3.setText(Integer.toString(getAI(copyAINamen.get(2)).getAnzahlCards()));
+            setNumberCardPlayer_andLastPLayedCard(AIx);
+            alertOneCardLeft(AIx);
+            setIconTableCard();
+            if (!AIx.hasCard()) {
+                list_player.remove(AIx);
+                array_players = list_player.toArray(new Players[0]);
+                if (deck.atLeast2PlayerHaveCards()) {
+                    counter++;
+                    continue;
+                }
+                break;
+            }
+            counter++;
 
-        if (getAI(copyAINamen.get(0)).getLastCardPlayed() == null) {
-            label_LastCardPLayedP1.setText("**picked**");
-        } else {
-            label_LastCardPLayedP1.setText(getAI(copyAINamen.get(0)).getLastCardPlayed().print());
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        if (getAI(copyAINamen.get(1)).getLastCardPlayed() == null) {
-            label_LastCardPLayedP2.setText("**picked**");
-        } else {
-            label_LastCardPLayedP2.setText(getAI(copyAINamen.get(1)).getLastCardPlayed().print());
+        if (!deck.allPlayersHaveCard()) {
+            if (!player.hasCard()) {
+                if (list_player.contains(player)) {
+                    JOptionPane.showMessageDialog(null,
+                            "Nice Game!!",
+                            "Game Over", JOptionPane.WARNING_MESSAGE);
+                    list_player.remove(player);
+                    turn(list_player.toArray(new Players[0]));
+                }
+            }
+            ArrayList<Boolean> playersHaveCards = new ArrayList<Boolean>();
+            for (int i = 0; i < deck.getListPlayers().size(); i++) {
+                Players players1 = deck.getListPlayers().get(i);
+                playersHaveCards.add(players1.hasCard());
+            }
+            if (Collections.frequency(playersHaveCards, true) == 1)  {
+                JOptionPane.showMessageDialog(null,
+                        deck.getListPlayers().get(playersHaveCards.indexOf(true)).getName() + " loosed the Game" +
+                                "\nYou can close the game",
+                        "Game Over", JOptionPane.WARNING_MESSAGE);
+                gameEnded = true;
+            }
+            if (!list_player.contains(player) && !gameEnded) {
+                counter = 0;
+                setIconTableCard();
+                turn(players);
+            }
         }
-        if (getAI(copyAINamen.get(2)).getLastCardPlayed() == null) {
-            label_LastCardPLayedP3.setText("**picked**");
-        } else {
-            label_LastCardPLayedP3.setText(getAI(copyAINamen.get(2)).getLastCardPlayed().print());
-        }
-
+        if (gameEnded) return;
+        counter = 0;
         playSelectedCardButton.setEnabled(true);
         pickButton.setEnabled(true);
         resetButton.setEnabled(true);
-        for (Players players1 : array_players) {
-            if (!players1.hasCard()) {
-                JOptionPane.showMessageDialog(null, players1.getName() + " won the game",
-                        "End", JOptionPane.WARNING_MESSAGE);
-                playSelectedCardButton.setEnabled(false);
-                pickButton.setEnabled(false);
-                resetButton.setEnabled(false);
-                textField_whoWon.setText(players1.getName() + "won the game");
-                textField_whoWon.setFont(new Font("Big", Font.BOLD, 15));
-                textField_whoWon.setDisabledTextColor(Color.BLUE);
-                return;
+
+        JOptionPane.showMessageDialog(null,"Your Turn",
+                "Be Careful", JOptionPane.WARNING_MESSAGE);
+
+        if (deck.getToPick() > 0) {
+            playerHaveToPick = doAddCard_forPlayerToPick();
+            if (playerHaveToPick == 0) {
+                JOptionPane.showMessageDialog(null,"You pick " +
+                        deck.getToPick() + " Cards","Be Careful",
+                        JOptionPane.WARNING_MESSAGE);
+                player.pick(deck.getToPick());
+                deck.resetToPick();
+                setLabels(player.getCards());
+                turn(players);
+            }
+        } else {
+            playerHaveToPick = -99;
+        }
+    }
+
+    private void setNumberCardPlayer_andLastPLayedCard(AI AIx) {
+        if (AIx.getName().equals(getAI(copyAINamen.get(0)).getName())) {
+            numberCardPlayer1.setText(Integer.toString(AIx.getAnzahlCards()));
+            if (AIx.getLastCardPlayed() == null) {
+                if (AIx.gotSkipped()) {
+                    label_LastCardPLayedP1.setText("**got skipped**");
+                } else {
+                    label_LastCardPLayedP1.setText("**picked**");
+                }
+            } else {
+                label_LastCardPLayedP1.setText(AIx.getLastCardPlayed().print());
+            }
+        } else if (AIx.getName().equals(getAI(copyAINamen.get(1)).getName())) {
+            numberCardPlayer2.setText(Integer.toString(AIx.getAnzahlCards()));
+            if (AIx.getLastCardPlayed() == null) {
+                if (AIx.gotSkipped()) {
+                    label_LastCardPLayedP2.setText("**got skipped**");
+                } else {
+                    label_LastCardPLayedP2.setText("**picked**");
+                }
+            } else {
+                label_LastCardPLayedP2.setText(AIx.getLastCardPlayed().print());
+            }
+        } else if (AIx.getName().equals(getAI(copyAINamen.get(2)).getName())) {
+            numberCardPlayer3.setText(Integer.toString(AIx.getAnzahlCards()));
+            if (AIx.getLastCardPlayed() == null) {
+                if (AIx.gotSkipped()) {
+                    label_LastCardPLayedP3.setText("**got skipped**");
+                } else {
+                    label_LastCardPLayedP3.setText("**picked**");
+                }
+            } else {
+                label_LastCardPLayedP3.setText(AIx.getLastCardPlayed().print());
             }
         }
-        JOptionPane.showMessageDialog(null,"Yout Turn",
-                "Be Careful", JOptionPane.WARNING_MESSAGE);
+    }
+    private void alertOneCardLeft(AI AIx) {
+        if (AIx.getName().equals(getAI(copyAINamen.get(0)).getName())) {
+            if (AIx.getAnzahlCards() == 1) {
+                pannel_p1.setBackground(Color.GREEN);
+            } else if (AIx.getAnzahlCards() == 0) {
+                pannel_p1.setBackground(Color.CYAN);
+            } else {
+                pannel_p1.setBackground(defaultBackgroundColor);
+            }
+        } else if (AIx.getName().equals(getAI(copyAINamen.get(1)).getName())) {
+            if (AIx.getAnzahlCards() == 1) {
+                pannel_p2.setBackground(Color.GREEN);
+            } else if (AIx.getAnzahlCards() == 0) {
+                pannel_p2.setBackground(Color.CYAN);
+            } else {
+                pannel_p2.setBackground(defaultBackgroundColor);
+            }
+        } else if (AIx.getName().equals(getAI(copyAINamen.get(2)).getName())) {
+            if (AIx.getAnzahlCards() == 1) {
+                pannel_p3.setBackground(Color.GREEN);
+            } else if (AIx.getAnzahlCards() == 0) {
+                pannel_p3.setBackground(Color.CYAN);
+            } else {
+                pannel_p3.setBackground(defaultBackgroundColor);
+            }
+        }
     }
 }
