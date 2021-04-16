@@ -33,8 +33,13 @@ public class CreateNewGameScreen extends JFrame {
         JFrame frame = new JFrame("CreateNewGameScreen");
         frame.setContentPane(mainPanel_NewGame);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setIconImage(StartScreen.windowIcon);
+        frame.setUndecorated(true);
+        frame.getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
+        StartScreen.frame.setEnabled(false);
         frame.pack();
         frame.setVisible(true);
+        GuiUtil.showOnMiddleScreen(frame);
 
         for (Spiel.Rules rule : Spiel.Rules.values()) {
             comboBox_cardsRuleOne.addItem(rule.toString());
@@ -46,11 +51,17 @@ public class CreateNewGameScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 spiel.setName(textField_gameName.getText());
                 if (saveGame_worked()) {
-                    startScreen.addSelectableGame(spiel);
-                    startScreen.setShowedGame(spiel);
-                    JOptionPane.showMessageDialog(null, "Game Added",
-                            "Success", JOptionPane.INFORMATION_MESSAGE);
-                    frame.dispose();
+                    File file = new File ("app/src/test/resources/" + spiel.getName());
+                    try {
+                        spiel.saveGame(file.getAbsolutePath() + ".spiel");
+                        startScreen.addSelectableGame(spiel);
+                        startScreen.setShowedGame(spiel);
+                        JOptionPane.showMessageDialog(null, "Game Added",
+                                "Success", JOptionPane.INFORMATION_MESSAGE);
+                        frame.dispose();
+                    } catch (SpielException se) {
+                        se.printStackTrace();
+                    }
                 }
             }
         });
@@ -88,6 +99,7 @@ public class CreateNewGameScreen extends JFrame {
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                StartScreen.frame.setEnabled(true);
                 frame.dispose();
             }
         });

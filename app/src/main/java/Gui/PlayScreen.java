@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class PlayScreen extends JFrame {
+public class PlayScreen extends JDialog {
     private JPanel mainPanel_play;
     private JButton startButton;
     private JButton cancelButton;
@@ -24,8 +24,13 @@ public class PlayScreen extends JFrame {
         JFrame frame = new JFrame("PlayScreen");
         frame.setContentPane(mainPanel_play);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setIconImage(StartScreen.windowIcon);
+        frame.setUndecorated(true);
+        frame.getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
+        frame_StartScreen.setEnabled(false);
         frame.pack();
         frame.setVisible(true);
+        GuiUtil.showOnMiddleScreen(frame);
 
         comboBox_anzahlOponnent.setSelectedItem("3");
 
@@ -48,6 +53,7 @@ public class PlayScreen extends JFrame {
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                frame_StartScreen.setEnabled(true);
                 frame.dispose();
             }
         });

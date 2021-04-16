@@ -73,7 +73,11 @@ public class CommandDialog extends JDialog {
 
     public void exec() {
         CommandDialog dialog = new CommandDialog();
+        dialog.setIconImage(StartScreen.windowIcon);
+        dialog.setUndecorated(true);
+        dialog.getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
         dialog.pack();
+        GuiUtil.showOnMiddleScreen(dialog);
         dialog.setVisible(true);
     }
 

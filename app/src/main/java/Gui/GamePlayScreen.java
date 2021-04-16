@@ -72,6 +72,9 @@ public class GamePlayScreen extends JFrame {
     private JPanel pannel_p2;
     private JPanel pannel_p3;
     private JLabel label_arrowOderOfPlay;
+    private JPanel panel_upperPart;
+    private JPanel panel_upperUpperPart;
+    private JPanel panel_lowerPart;
     private JPanel panel_scrollbar;
 
     private JLabel[] label_yourCardsIMG = {label_CardIMG0, label_CardIMG1, label_CardIMG2, label_CardIMG3,label_CardIMG4,
@@ -98,10 +101,31 @@ public class GamePlayScreen extends JFrame {
         arrayList_cardsToBePlayed = new ArrayList<>();
         copyAINamen = new ArrayList<>();
         frame = new JFrame("GamePlayScreen");
+
+        panel_yourCardIMG.setBackground(new Color(173, 216, 230));
+        panel_yourCardIMG.setForeground(Color.BLACK);
+        panel_yourCards.setBackground(new Color(173, 216, 230));
+        panel_yourCards.setForeground(Color.BLACK);
+        textArea_CardOnTable.setBackground(new Color(173, 216, 230));
+        textArea_CardOnTable.setForeground(Color.BLACK);
+        Table_cards.setBackground(new Color(173, 216, 230));
+        Table_cards.setForeground(Color.BLACK);
+        mainPanel_Gameplay.setBackground(Color.DARK_GRAY);
+        mainPanel_Gameplay.setForeground(Color.WHITE);
+        panel_upperPart.setBackground(Color.DARK_GRAY);
+        panel_upperPart.setForeground(Color.WHITE);
+        panel_lowerPart.setBackground(Color.DARK_GRAY);
+        panel_lowerPart.setForeground(Color.WHITE);
+
+
+
         frame.setContentPane(mainPanel_Gameplay);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+        frame.setIconImage(StartScreen.windowIcon);
+        frame.setUndecorated(true);
+        frame.getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
         frame.pack();
+        GuiUtil.showFullScreen(frame);
         frame.setVisible(true);
 
         defaultBackgroundColor = pannel_p1.getBackground();
@@ -679,8 +703,10 @@ public class GamePlayScreen extends JFrame {
                                     return " used Skip on the next AI";
                                 }
                             } else {
+                                setNumberCardPlayer_andLastPLayedCard(AIx);
                                 JOptionPane.showMessageDialog(null,
-                                        "You got skipped" ,"Be Careful", JOptionPane.WARNING_MESSAGE);
+                                        "You got skipped by " + AIx.getName() ,
+                                        "Be Careful", JOptionPane.WARNING_MESSAGE);
                                 pickButton.setEnabled(false);
 
                                 ArrayList<Players> tempPLayerList = new ArrayList<>();
@@ -699,8 +725,10 @@ public class GamePlayScreen extends JFrame {
                                 setNumberCardPlayer_andLastPLayedCard((AI) array_players[counter]);
                                 return " used Skip on the next AI";
                             } else {
+                                setNumberCardPlayer_andLastPLayedCard(AIx);
                                 JOptionPane.showMessageDialog(null,
-                                      "You got skipped" ,"Be Careful", JOptionPane.WARNING_MESSAGE);
+                                      "You got skipped by " + AIx.getName() ,
+                                        "Be Careful", JOptionPane.WARNING_MESSAGE);
                                 pickButton.setEnabled(false);
 
                                 ArrayList<Players> tempPLayerList = new ArrayList<>();
