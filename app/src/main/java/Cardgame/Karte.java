@@ -160,4 +160,12 @@ public class Karte {
         }
 
     }
+
+    public boolean hasRule(Spiel.Rules regel) {
+        if (!hasRule()) return false;
+        for (String regeln : getRules()) {
+            if (regeln.equals(regel.toString())) return true;
+        }
+        return false;
+    }
 }

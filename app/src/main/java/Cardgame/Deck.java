@@ -101,12 +101,16 @@ public class Deck {
         return lasPlayedCard;
     }
 
-    private void addToPick(int anzahl) {
+    public void addToPick(int anzahl) {
         toPick += anzahl;
     }
 
-    private void resetToPick() {
+    public void resetToPick() {
         toPick = 0;
+    }
+
+    public int getToPick() {
+        return toPick;
     }
 
     public void setLasPlayedCard(Karte lasPlayedCard) {
@@ -116,7 +120,8 @@ public class Deck {
     public Karte getTopCard() {
         if (playableCards.size() < 1) {
             int counter = 0;
-            while (playedCards.size() != 1) {
+            while (playedCards.size() != 1 ||
+                    (counter < playableCards.size() && counter < playedCards.size())) {
                 playableCards.add(playedCards.get(counter));
                 playedCards.remove(counter++);
             }
@@ -169,54 +174,81 @@ public class Deck {
         Collections.reverse(listPlayers);
     }
 
+    public static Players[] reverse(Players[] players) {
+        ArrayList<Players> player = new ArrayList<>();
+        Collections.addAll(player, players);
+        Collections.reverse(player);
+        return player.toArray(new Players[0]);
+    }
+
     private void skip(Karte[] card) {
         ArrayList<Karte> karten = new ArrayList<>();
         Collections.addAll(karten, card);
         playedCards.addAll(karten);
     }
 
-    private boolean add2 (Karte[] card, Players player, Karte possible_addStopCard) {
+    public int add2 (Players player) {
         ArrayList<Karte> karten = new ArrayList<>();
-        Collections.addAll(karten, card);
-        playedCards.addAll(karten);
-        if (possible_addStopCard.getRules().length == 0) {
-            player.pick(2);
-            return true;
-        }
-        ArrayList <String> rules = new ArrayList<>();
-        Collections.addAll(rules, possible_addStopCard.getRules());
-        if (rules.contains(Spiel.Rules.stopAdd.toString()))  {
-            playedCards.add(possible_addStopCard);
-            if (rules.contains(Spiel.Rules.add2.toString())) {
-                addToPick(2);
-            } else if (rules.contains(Spiel.Rules.add4.toString())) {
-                addToPick(4);
+        Collections.addAll(karten, player.getCards());
+        boolean found1 = false,
+                found2 = false,
+                found3 = false;
+        for (Karte possible_addStopCard : karten) {
+            if (possible_addStopCard.getRules().length == 0) {
+                continue;
             }
-            return false;
+            ArrayList <String> rules = new ArrayList<>();
+            Collections.addAll(rules, possible_addStopCard.getRules());
+            if (rules.contains(Spiel.Rules.stopAdd.toString())) {
+                found1 = true;
+                break;
+            }
+            if (rules.contains(Spiel.Rules.add2.toString())) {
+                found2 = true;
+                break;
+            }
+            if (rules.contains(Spiel.Rules.add4.toString())) {
+                found3 = true;
+                break;
+            }
         }
-        return true;
+        if (found3) return 3; // player have a add4 card. Doesn't pick if he plays it
+        if (found2) return 2; // player have a add2 card. Doesn't pick if he plays it
+        if (found1) return 1; // player have a stopAdd card. Doesn't pick if he plays it
+
+        return 0; // player pick 2 Cards
     }
 
-    private boolean add4 (Karte[] card, Players player, Karte possible_addStopCard) {
+    public int add4 (Players player) {
         ArrayList<Karte> karten = new ArrayList<>();
-        Collections.addAll(karten, card);
-        playedCards.addAll(karten);
-        if (possible_addStopCard.getRules().length == 0) {
-            player.pick(4);
-            return true;
-        }
-        ArrayList <String> rules = new ArrayList<>();
-        Collections.addAll(rules, possible_addStopCard.getRules());
-        if (rules.contains(Spiel.Rules.stopAdd.toString()))  {
-            playedCards.add(possible_addStopCard);
-            if (rules.contains(Spiel.Rules.add2.toString())) {
-                addToPick(2);
-            } else if (rules.contains(Spiel.Rules.add4.toString())) {
-                addToPick(4);
+        Collections.addAll(karten, player.getCards());
+        boolean found5 = false,
+                found6 = false,
+                found7 = false;
+        for (Karte possible_addStopCard : karten) {
+            if (possible_addStopCard.getRules().length == 0) {
+                continue;
             }
-            return false;
+            ArrayList <String> rules = new ArrayList<>();
+            Collections.addAll(rules, possible_addStopCard.getRules());
+            if (rules.contains(Spiel.Rules.stopAdd.toString())) {
+                found5 = true;
+                break;
+            }
+            if (rules.contains(Spiel.Rules.add2.toString())) {
+                found6 = true;
+                break;
+            }
+            if (rules.contains(Spiel.Rules.add4.toString())) {
+                found7 = true;
+                break;
+            }
         }
-        return true;
+        if (found7) return 7; // player have a add4 card. Doesn't pick if he plays it
+        if (found6) return 6; // player have a add2 card. Doesn't pick if he plays it
+        if (found5) return 5; // player have a stopAdd card. Doesn't pick if he plays it
+
+        return 4; // player pick 4 Cards
     }
 
     public boolean allPlayersHaveCard() {
@@ -226,6 +258,14 @@ public class Deck {
             }
         }
         return true;
+    }
+
+    public boolean atLeast2PlayerHaveCards() {
+        ArrayList<Boolean> playerHasCards = new ArrayList<>();
+        for (Players players : listPlayers) {
+            playerHasCards.add(players.hasCard());
+        }
+        return Collections.frequency(playerHasCards, true) >= 2;
     }
 
     public void addPlayedCards(Karte[] playedCards) {
