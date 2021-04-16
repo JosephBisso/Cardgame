@@ -119,11 +119,9 @@ public class Deck {
 
     public Karte getTopCard() {
         if (playableCards.size() < 1) {
-            int counter = 0;
-            while (playedCards.size() != 1 ||
-                    (counter < playableCards.size() && counter < playedCards.size())) {
-                playableCards.add(playedCards.get(counter));
-                playedCards.remove(counter++);
+            while (playedCards.size() != 1) {
+                playableCards.add(playedCards.get(0));
+                playedCards.remove(0);
             }
             mix(playableCards);
         }

@@ -7,4 +7,5 @@ public interface Players {
     int getAnzahlCards();
     Karte[] getCards();
     String getName();
+    //void resetCards();
 }

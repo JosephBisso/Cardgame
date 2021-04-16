@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 public class DeckTest {
 
     private Spiel testSpiel;
@@ -104,5 +106,17 @@ public class DeckTest {
         player = new Spieler(testDeck);
         player.pick(4);
         assertEquals(testDeck.add4(player), 7);
+    }
+
+    @Test
+    public void getTopCard_7Time_dontThrow() {
+        testDeck = testSpiel.createDeck();
+        player = new Spieler(testDeck);
+        player.pick(4);
+        player.play(player.getCards());
+        ArrayList<Karte> testKarten = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            testKarten.add(testDeck.getTopCard());
+        }
     }
 }
