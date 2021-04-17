@@ -26,11 +26,7 @@ To run the game, (preferently) ***open the project with Intellij IDEA*** and the
 To create a new Game you just have to either: 
 1. create a new game using the Game GUI by clicking on the button **create Game** and add the cards of your game with their rules. The so created Game wil be saved in `app/src/test/resources/`
 
-<details><summary> Preview Create Game </summary><p>
-  
 <img src="https://github.com/JosephBisso/Cardgame/blob/main/preview/CreateNewGameScreen.png" width="700">
-
-</p></details>
 
 2. cd `app/src/main/resources/Games` and paste here a normal ***text*** or ***csv*** file, then replace their extension with the extension `.spiel`. The Format for a `.spiel` file is as follow :
 
