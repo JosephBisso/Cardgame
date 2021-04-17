@@ -21,6 +21,10 @@ Fun app to play your favorite card game against computer opponents **(Beta)**
 
 To run the game, (preferently) ***open the project with Intellij IDEA*** and then run the main Method of ***Cardgame.Main***. That's all!.
 
+### Play a Game
+
+Choose, Load or Create the Game you want to play and press the **play** button
+
 ### Create new Game
 
 To create a new Game you just have to either: 
