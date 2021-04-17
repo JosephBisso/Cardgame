@@ -72,6 +72,10 @@ You can see all the Cards and their Rules in the example above. Playing this Gam
 
 ### Turn
 
+- To play a Card or a set of matching Cards, either ***double-clic*** on the Card(s) you want to play and press **play selected Cards**, oder ***double-clic*** on the name of the card(s) on the list of your card and then press **play the selected Cards**.
+
+- You can also pass you turn and pick a Card by pressing the **pick** button 
+
 #### Interactions between AI and you
 
 - During the game you will habe to interact with the AIs. Some examples are when you or one of the AIs "commands" a Card or when you got stopped ("skipped") by of the AIs. There are still minor bugs but all works pretty fine for now. 
