@@ -7,7 +7,7 @@ Fun app to play your favorite card game against computer opponents **(Beta)**
 
 ## Description
 
-- Cardgame is a implementation of a physical Card game. For now there is only one pre-programmed Game but with this programm you can play a large number of card games if you know the rule and want to create a new Game with existing rules. But more (popular) Games are definitling in the way. Stay tunned!
+- Cardgame is a implementation of a physical Card game. For now there is only one pre-programmed Game but with this programm you can play a large number of card games if you know the rule and want to create a new Game with existing rules. But more (popular) Games are definitling in the way. **STAY TUNNED !!**
 
 - Your opponents will be AIs. The last Player with remaining Card loose the Game. For now neither the number of Ais nor their Level can be changed, but I played a couple hundred games and sometimes I win and sometimes I loose. Either way I had a lot of fun
 
