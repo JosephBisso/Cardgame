@@ -34,7 +34,17 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'Cardgame.App'
+    mainClass = 'Cardgame.Main'
+}
+
+jar {
+    doFirst {
+        manifest {
+            attributes(
+                    'Main-Class': 'Cardgame.Main',
+            )
+        }
+    }
 }
 
 test {
